@@ -212,6 +212,26 @@
       margin-top:8px;
       line-height:1.35;
     }
+    .summary-actions{
+      justify-content:flex-end;
+      align-items:flex-end;
+    }
+    @media (max-width: 640px){
+      .summary-actions{
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .summary-actions .field,
+      .summary-actions .field.small{
+        min-width:0;
+        width:100%;
+        max-width:none;
+      }
+      .summary-actions .btn{
+        width:100%;
+        text-align:center;
+      }
+    }
     .danger-text{ color: var(--danger); }
     .small{ font-size:12px; color:var(--muted); }
 
@@ -234,7 +254,6 @@
 <header>
   <div class="split no-gap">
     <h1>Bütçe Takip</h1>
-    <button class="btn ghost" id="toggleBudget" aria-expanded="false">Aylık bütçeyi ayarla</button>
   </div>
 </header>
 
@@ -272,11 +291,12 @@
   <section class="card">
     <div class="split">
       <h2>Özet</h2>
-      <div class="row">
+      <div class="row summary-actions">
         <div class="field small">
           <label for="summaryMonth">Ay</label>
           <input id="summaryMonth" type="month" />
         </div>
+        <button class="btn ghost" id="toggleBudget" aria-expanded="false">Aylık bütçeyi ayarla</button>
       </div>
     </div>
 
