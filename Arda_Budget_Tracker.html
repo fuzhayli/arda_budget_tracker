@@ -25,7 +25,8 @@
     }
     header{
       padding:18px 16px 6px;
-      max-width:1100px;
+      width:min(1200px, 100%);
+      max-width:1200px;
       margin:0 auto;
     }
     header h1{
@@ -39,7 +40,8 @@
       font-size:13px;
     }
     main{
-      max-width:1100px;
+      width:min(1200px, 100%);
+      max-width:1200px;
       margin:0 auto;
       padding:12px 16px 40px;
       display:grid;
@@ -183,6 +185,7 @@
       flex-wrap:wrap;
       margin-bottom:10px;
     }
+    .split.no-gap{ margin-bottom:0; }
     .tabs{
       display:flex;
       gap:8px;
@@ -229,35 +232,41 @@
 </head>
 <body>
 <header>
-  <h1>Bütçe Takip (Firebase yok • EN yok • Karanlık mod yok)</h1>
-  <p>Veriler bu tarayıcıda <b>localStorage</b> ile saklanır. Başka cihazda otomatik senkron olmaz.</p>
+  <div class="split no-gap">
+    <h1>Bütçe Takip</h1>
+    <button class="btn ghost" id="toggleBudget" aria-expanded="false">Aylık bütçeyi ayarla</button>
+  </div>
 </header>
 
 <main>
-  <section class="card">
-    <h2>Aylık Başlangıç Bütçesi</h2>
+  <section class="card" id="expenseCard">
+    <h2>Harcama Ekle</h2>
     <div class="row">
-      <div class="field">
-        <label for="budgetAna">Ana Kart (TL)</label>
-        <input id="budgetAna" type="number" min="0" step="0.01" placeholder="Örn: 20000" />
+      <div class="field small">
+        <label for="expCard">Kart</label>
+        <select id="expCard">
+          <option value="ana">Ana Kart</option>
+          <option value="multinet">Multinet</option>
+        </select>
+      </div>
+      <div class="field small">
+        <label for="expDate">Tarih</label>
+        <input id="expDate" type="date" />
+      </div>
+      <div class="field small">
+        <label for="expAmount">Tutar (TL)</label>
+        <input id="expAmount" type="number" min="0.01" step="0.01" placeholder="Örn: 250" />
       </div>
       <div class="field">
-        <label for="budgetMulti">Multinet (TL)</label>
-        <input id="budgetMulti" type="number" min="0" step="0.01" placeholder="Örn: 4000" />
+        <label for="expDesc">Açıklama (opsiyonel)</label>
+        <input id="expDesc" type="text" placeholder="Örn: Market" />
       </div>
       <div class="field small">
         <label>&nbsp;</label>
-        <button class="btn" id="applyBudgets">Bütçeleri Uygula</button>
-      </div>
-      <div class="field small">
-        <label>&nbsp;</label>
-        <button class="btn ghost" id="resetAll">Tüm Veriyi Sıfırla</button>
+        <button class="btn" id="addExpense">Ekle</button>
       </div>
     </div>
-    <div class="hint">
-      <b>Not:</b> “Günlük Harçlık (Aylık/Gün)” = <i>aylık bütçe ÷ o ayın gün sayısı</i>.
-      “Birikmiş (bu ay)” = seçili ayda <i>bugüne kadar planlanan (günlük×geçen gün) − bugüne kadar harcama</i>.
-    </div>
+    <div class="hint" id="addExpenseHint"></div>
   </section>
 
   <section class="card">
@@ -320,34 +329,33 @@
     </div>
   </section>
 
-  <section class="card">
-    <h2>Harcama Ekle</h2>
+  <section class="card" id="budgetCard" hidden>
+    <div class="split">
+      <h2>Aylık Başlangıç Bütçesi</h2>
+      <button class="btn ghost" id="closeBudget">Kapat</button>
+    </div>
     <div class="row">
-      <div class="field small">
-        <label for="expCard">Kart</label>
-        <select id="expCard">
-          <option value="ana">Ana Kart</option>
-          <option value="multinet">Multinet</option>
-        </select>
-      </div>
-      <div class="field small">
-        <label for="expDate">Tarih</label>
-        <input id="expDate" type="date" />
-      </div>
-      <div class="field small">
-        <label for="expAmount">Tutar (TL)</label>
-        <input id="expAmount" type="number" min="0.01" step="0.01" placeholder="Örn: 250" />
+      <div class="field">
+        <label for="budgetAna">Ana Kart (TL)</label>
+        <input id="budgetAna" type="number" min="0" step="0.01" placeholder="Örn: 20000" />
       </div>
       <div class="field">
-        <label for="expDesc">Açıklama (opsiyonel)</label>
-        <input id="expDesc" type="text" placeholder="Örn: Market" />
+        <label for="budgetMulti">Multinet (TL)</label>
+        <input id="budgetMulti" type="number" min="0" step="0.01" placeholder="Örn: 4000" />
       </div>
       <div class="field small">
         <label>&nbsp;</label>
-        <button class="btn" id="addExpense">Ekle</button>
+        <button class="btn" id="applyBudgets">Bütçeleri Uygula</button>
+      </div>
+      <div class="field small">
+        <label>&nbsp;</label>
+        <button class="btn ghost" id="resetAll">Tüm Veriyi Sıfırla</button>
       </div>
     </div>
-    <div class="hint" id="addExpenseHint"></div>
+    <div class="hint">
+      <b>Not:</b> “Günlük Harçlık (Aylık/Gün)” = <i>aylık bütçe ÷ o ayın gün sayısı</i>.
+      “Birikmiş (bu ay)” = seçili ayda <i>bugüne kadar planlanan (günlük×geçen gün) − bugüne kadar harcama</i>.
+    </div>
   </section>
 
   <section class="card">
@@ -551,6 +559,9 @@
   //  Elements
   // -----------------------------
   const els = {
+    toggleBudget: document.getElementById("toggleBudget"),
+    budgetCard: document.getElementById("budgetCard"),
+    closeBudget: document.getElementById("closeBudget"),
     budgetAna: document.getElementById("budgetAna"),
     budgetMulti: document.getElementById("budgetMulti"),
     applyBudgets: document.getElementById("applyBudgets"),
@@ -627,9 +638,30 @@
   // -----------------------------
   //  Budgets
   // -----------------------------
+  function setBudgetVisibility(show){
+    const visible = !!show;
+    if(els.budgetCard){
+      els.budgetCard.hidden = !visible;
+    }
+    if(els.toggleBudget){
+      els.toggleBudget.setAttribute("aria-expanded", String(visible));
+      els.toggleBudget.textContent = visible ? "Bütçe bölümünü gizle" : "Aylık bütçeyi ayarla";
+    }
+  }
+
   function renderBudgetsInputs(){
     els.budgetAna.value = state.budgets.ana ?? 0;
     els.budgetMulti.value = state.budgets.multinet ?? 0;
+  }
+
+  if(els.toggleBudget){
+    els.toggleBudget.addEventListener("click", () => {
+      setBudgetVisibility(els.budgetCard?.hidden);
+    });
+  }
+
+  if(els.closeBudget){
+    els.closeBudget.addEventListener("click", () => setBudgetVisibility(false));
   }
 
   els.applyBudgets.addEventListener("click", () => {
@@ -1087,6 +1119,8 @@
   els.chartCard.addEventListener("change", renderChart);
   els.chartMonth.addEventListener("change", () => { if(chartMode==="monthly") renderChart(); });
   els.chartYear.addEventListener("change", () => { if(chartMode==="yearly") renderChart(); });
+
+  setBudgetVisibility(false);
 
   // -----------------------------
   //  Render all
