@@ -7,32 +7,51 @@
   <style>
     :root{
       --bg:#f6f7fb;
+      --bg-accent: radial-gradient(circle at 20% 20%, rgba(37,99,235,.12), transparent 35%), radial-gradient(circle at 80% 0%, rgba(34,197,94,.14), transparent 32%), linear-gradient(180deg, #f9fafb, #eef2ff 40%, #f9fafb);
       --card:#ffffff;
-      --text:#111827;
+      --text:#0f172a;
       --muted:#6b7280;
       --border:#e5e7eb;
       --accent:#2563eb;
+      --accent-2:#22c55e;
       --danger:#dc2626;
-      --shadow: 0 10px 25px rgba(0,0,0,.06);
+      --shadow: 0 12px 28px rgba(15,23,42,.12);
       --radius: 16px;
+      --glass: rgba(255,255,255,0.92);
     }
     *{ box-sizing:border-box; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
       background:var(--bg);
+      background-image: var(--bg-accent);
       color:var(--text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x:hidden;
     }
     header{
-      padding:18px 16px 6px;
+      padding:24px 16px 12px;
       width:min(1200px, 100%);
       max-width:1200px;
       margin:0 auto;
+      position: relative;
     }
     header h1{
       margin:0;
-      font-size:20px;
-      letter-spacing:.2px;
+      font-size:22px;
+      letter-spacing:.3px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    header h1::before{
+      content:"";
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 0 0 6px rgba(37,99,235,.15);
     }
     header p{
       margin:6px 0 0;
@@ -62,15 +81,32 @@
       .grid-2, .grid-3{ grid-template-columns:1fr; }
     }
     .card{
-      background:var(--card);
-      border:1px solid var(--border);
+      background:var(--glass);
+      border:1px solid rgba(229,231,235,.7);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       padding:14px;
+      position:relative;
+      overflow:hidden;
+      backdrop-filter: blur(6px);
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: radial-gradient(circle at 15% 20%, rgba(37,99,235,.07), transparent 30%), radial-gradient(circle at 85% 10%, rgba(34,197,94,.06), transparent 32%);
+      pointer-events:none;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(15,23,42,.14);
+      border-color: rgba(37,99,235,.35);
     }
     .card h2{
       margin:0 0 10px;
-      font-size:15px;
+      font-size:16px;
+      letter-spacing:.1px;
     }
     .row{
       display:flex;
@@ -94,11 +130,13 @@
       border-radius:12px;
       background:#fff;
       outline:none;
+      transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
     }
     textarea{ min-height: 38px; resize: vertical; }
     input:focus, select:focus, textarea:focus{
       border-color: rgba(37, 99, 235, .45);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+      box-shadow: 0 8px 30px rgba(37, 99, 235, .12);
+      transform: translateY(-1px);
     }
     .field{
       flex:1;
@@ -113,15 +151,24 @@
       background:var(--accent);
       color:#fff;
       font-weight:600;
+      box-shadow: 0 10px 25px rgba(37,99,235,.25);
+      transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
     }
     .btn:active{ transform: translateY(1px); }
+    .btn:hover{
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 12px 32px rgba(37,99,235,.3);
+      filter: brightness(1.03);
+    }
     .btn.ghost{
-      background:transparent;
+      background:rgba(255,255,255,0.92);
       color:var(--text);
       border:1px solid var(--border);
+      box-shadow:none;
     }
     .btn.danger{
       background:var(--danger);
+      box-shadow: 0 12px 26px rgba(220,38,38,.25);
     }
     .kpi{
       display:flex;
@@ -171,10 +218,10 @@
       display:inline-block;
       padding:4px 8px;
       border-radius:999px;
-      border:1px solid var(--border);
+      border:1px solid rgba(37,99,235,.25);
       font-size:12px;
       color:var(--text);
-      background:#fff;
+      background:linear-gradient(135deg, rgba(37,99,235,.12), rgba(34,197,94,.10));
       white-space: nowrap;
     }
     .split{
@@ -203,7 +250,8 @@
     }
     .tab.active{
       border-color: rgba(37, 99, 235, .35);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+      box-shadow: 0 10px 28px rgba(37,99,235,.15);
+      background: linear-gradient(135deg, rgba(37,99,235,.1), rgba(34,197,94,.12));
     }
     .right{ margin-left:auto; }
     .hint{
@@ -247,6 +295,38 @@
       th.select-col, td.select-col{ width: 60px; }
       th.amount-col, td.amount-col{ width: 105px; }
     }
+
+    /* Micro animations */
+    .btn.pulse{
+      animation: button-pop .32s ease;
+    }
+    @keyframes button-pop{
+      0%{ transform: scale(1); }
+      35%{ transform: scale(1.05); }
+      100%{ transform: scale(1); }
+    }
+    .highlight-row{
+      position:relative;
+      background: linear-gradient(90deg, rgba(34,197,94,.12), rgba(37,99,235,.12));
+      animation: row-fade 1.4s ease forwards;
+    }
+    @keyframes row-fade{
+      0%{ background: linear-gradient(90deg, rgba(34,197,94,.16), rgba(37,99,235,.16)); }
+      60%{ background: linear-gradient(90deg, rgba(34,197,94,.08), rgba(37,99,235,.08)); }
+      100%{ background: transparent; }
+    }
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .section-title .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -259,7 +339,7 @@
 
 <main>
   <section class="card" id="expenseCard">
-    <h2>Harcama Ekle</h2>
+    <h2 class="section-title"><span class="dot"></span>Harcama Ekle</h2>
     <div class="row">
       <div class="field small">
         <label for="expCard">Kart</label>
@@ -290,7 +370,7 @@
 
   <section class="card">
     <div class="split">
-      <h2>Özet</h2>
+      <h2 class="section-title"><span class="dot"></span>Özet</h2>
       <div class="row summary-actions">
         <div class="field small">
           <label for="summaryMonth">Ay</label>
@@ -351,7 +431,7 @@
 
   <section class="card" id="budgetCard" hidden>
     <div class="split">
-      <h2>Aylık Başlangıç Bütçesi</h2>
+      <h2 class="section-title"><span class="dot"></span>Aylık Başlangıç Bütçesi</h2>
       <button class="btn ghost" id="closeBudget">Kapat</button>
     </div>
     <div class="row">
@@ -380,7 +460,7 @@
 
   <section class="card">
     <div class="split">
-      <h2>Harcama Geçmişi</h2>
+      <h2 class="section-title"><span class="dot"></span>Harcama Geçmişi</h2>
       <div class="row">
         <div class="field small">
           <label for="filterCard">Filtre (Kart)</label>
@@ -446,7 +526,7 @@
 
   <section class="card">
     <div class="split">
-      <h2>Grafikler</h2>
+      <h2 class="section-title"><span class="dot"></span>Grafikler</h2>
       <div class="tabs">
         <button class="tab active" id="tabMonthly">Aylık</button>
         <button class="tab" id="tabYearly">Yıllık</button>
@@ -509,6 +589,7 @@
 
   let state = loadState();
   let selectedIds = new Set();
+  let lastAddedId = null;
 
   // -----------------------------
   //  Utils
@@ -825,6 +906,9 @@
       return;
     }
 
+    els.addExpense.classList.add("pulse");
+    setTimeout(() => els.addExpense.classList.remove("pulse"), 320);
+
     const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
     state.expenses.push({
       id,
@@ -834,6 +918,7 @@
       desc,
       createdAt: Date.now()
     });
+    lastAddedId = id;
 
     saveState();
     els.expAmount.value = "";
@@ -889,6 +974,9 @@
     const frag = document.createDocumentFragment();
     for(const e of rows){
       const tr = document.createElement("tr");
+      if(e.id === lastAddedId){
+        tr.classList.add("highlight-row");
+      }
 
       const tdSel = document.createElement("td");
       tdSel.className = "select-col";
@@ -920,6 +1008,9 @@
     }
     els.historyBody.innerHTML = "";
     els.historyBody.appendChild(frag);
+    if(lastAddedId){
+      setTimeout(() => { lastAddedId = null; }, 900);
+    }
   }
 
   els.historyBody.addEventListener("change", (e) => {
