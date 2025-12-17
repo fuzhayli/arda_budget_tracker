@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bütçe Takip (Local)</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --accent:#2563eb;
+      --danger:#dc2626;
+      --shadow: 0 10px 25px rgba(0,0,0,.06);
+      --radius: 16px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:18px 16px 6px;
+      max-width:1100px;
+      margin:0 auto;
+    }
+    header h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing:.2px;
+    }
+    header p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    main{
+      max-width:1100px;
+      margin:0 auto;
+      padding:12px 16px 40px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    .grid-3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid-2, .grid-3{ grid-template-columns:1fr; }
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:15px;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    label{
+      font-size:12px;
+      color:var(--muted);
+      display:block;
+      margin:0 0 6px;
+    }
+    input, select, button, textarea{
+      font: inherit;
+    }
+    input, select, textarea{
+      width:100%;
+      padding:10px 10px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+      outline:none;
+    }
+    textarea{ min-height: 38px; resize: vertical; }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(37, 99, 235, .45);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+    }
+    .field{
+      flex:1;
+      min-width: 180px;
+    }
+    .field.small{ min-width: 130px; max-width: 220px; }
+    .btn{
+      cursor:pointer;
+      border:0;
+      border-radius:12px;
+      padding:10px 12px;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn.ghost{
+      background:transparent;
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn.danger{
+      background:var(--danger);
+    }
+    .kpi{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding:12px;
+      border:1px dashed var(--border);
+      border-radius:14px;
+    }
+    .kpi .name{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .kpi .value{
+      font-size:18px;
+      font-weight:700;
+      line-height: 1.15;
+    }
+    .muted{ color:var(--muted); font-size:12px; }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      table-layout: fixed;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--border);
+      font-size:13px;
+      vertical-align:top;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    th{
+      text-align:left;
+      color:var(--muted);
+      background:#fafafa;
+      font-weight:600;
+      white-space: nowrap;
+    }
+    tr:last-child td{ border-bottom:0; }
+    .pill{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:12px;
+      color:var(--text);
+      background:#fff;
+      white-space: nowrap;
+    }
+    .split{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .tab{
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+    }
+    .tab.active{
+      border-color: rgba(37, 99, 235, .35);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+    }
+    .right{ margin-left:auto; }
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+      line-height:1.35;
+    }
+    .danger-text{ color: var(--danger); }
+    .small{ font-size:12px; color:var(--muted); }
+
+    /* History table column sizing to prevent header overlap */
+    th.select-col, td.select-col{ width: 84px; }
+    th.date-col, td.date-col{ width: 112px; }
+    th.card-col, td.card-col{ width: 120px; }
+    th.amount-col, td.amount-col{ width: 120px; }
+    td.desc-col{ white-space: normal; overflow: visible; text-overflow: clip; word-break: break-word; }
+
+    @media (max-width: 520px){
+      .hide-sm{ display:none; }
+      th.select-col, td.select-col{ width: 60px; }
+      th.amount-col, td.amount-col{ width: 105px; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>Bütçe Takip (Firebase yok • EN yok • Karanlık mod yok)</h1>
+  <p>Veriler bu tarayıcıda <b>localStorage</b> ile saklanır. Başka cihazda otomatik senkron olmaz.</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Aylık Başlangıç Bütçesi</h2>
+    <div class="row">
+      <div class="field">
+        <label for="budgetAna">Ana Kart (TL)</label>
+        <input id="budgetAna" type="number" min="0" step="0.01" placeholder="Örn: 20000" />
+      </div>
+      <div class="field">
+        <label for="budgetMulti">Multinet (TL)</label>
+        <input id="budgetMulti" type="number" min="0" step="0.01" placeholder="Örn: 4000" />
+      </div>
+      <div class="field small">
+        <label>&nbsp;</label>
+        <button class="btn" id="applyBudgets">Bütçeleri Uygula</button>
+      </div>
+      <div class="field small">
+        <label>&nbsp;</label>
+        <button class="btn ghost" id="resetAll">Tüm Veriyi Sıfırla</button>
+      </div>
+    </div>
+    <div class="hint">
+      <b>Not:</b> “Günlük Harçlık (Aylık/Gün)” = <i>aylık bütçe ÷ o ayın gün sayısı</i>.
+      “Birikmiş (bu ay)” = seçili ayda <i>bugüne kadar planlanan (günlük×geçen gün) − bugüne kadar harcama</i>.
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="split">
+      <h2>Özet</h2>
+      <div class="row">
+        <div class="field small">
+          <label for="summaryMonth">Ay</label>
+          <input id="summaryMonth" type="month" />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="row" style="margin-bottom:10px;">
+          <span class="pill"><b>Ana Kart</b></span>
+          <span class="small" id="anaSpentInfo"></span>
+        </div>
+        <div class="grid-3">
+          <div class="kpi">
+            <div class="name">Aylık Kalan</div>
+            <div class="value" id="anaRemaining">₺0</div>
+          </div>
+          <div class="kpi">
+            <div class="name">Günlük Harçlık (Aylık/Gün)</div>
+            <div class="value" id="anaDailyBase">₺0</div>
+            <div class="muted" id="anaDailyNote"></div>
+          </div>
+          <div class="kpi">
+            <div class="name">Birikmiş (bu ay)</div>
+            <div class="value" id="anaAccum">₺0</div>
+            <div class="muted" id="anaAccumNote"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="row" style="margin-bottom:10px;">
+          <span class="pill"><b>Multinet</b></span>
+          <span class="small" id="multiSpentInfo"></span>
+        </div>
+        <div class="grid-3">
+          <div class="kpi">
+            <div class="name">Aylık Kalan</div>
+            <div class="value" id="multiRemaining">₺0</div>
+          </div>
+          <div class="kpi">
+            <div class="name">Günlük Harçlık (Aylık/Gün)</div>
+            <div class="value" id="multiDailyBase">₺0</div>
+            <div class="muted" id="multiDailyNote"></div>
+          </div>
+          <div class="kpi">
+            <div class="name">Birikmiş (bu ay)</div>
+            <div class="value" id="multiAccum">₺0</div>
+            <div class="muted" id="multiAccumNote"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Harcama Ekle</h2>
+    <div class="row">
+      <div class="field small">
+        <label for="expCard">Kart</label>
+        <select id="expCard">
+          <option value="ana">Ana Kart</option>
+          <option value="multinet">Multinet</option>
+        </select>
+      </div>
+      <div class="field small">
+        <label for="expDate">Tarih</label>
+        <input id="expDate" type="date" />
+      </div>
+      <div class="field small">
+        <label for="expAmount">Tutar (TL)</label>
+        <input id="expAmount" type="number" min="0.01" step="0.01" placeholder="Örn: 250" />
+      </div>
+      <div class="field">
+        <label for="expDesc">Açıklama (opsiyonel)</label>
+        <input id="expDesc" type="text" placeholder="Örn: Market" />
+      </div>
+      <div class="field small">
+        <label>&nbsp;</label>
+        <button class="btn" id="addExpense">Ekle</button>
+      </div>
+    </div>
+    <div class="hint" id="addExpenseHint"></div>
+  </section>
+
+  <section class="card">
+    <div class="split">
+      <h2>Harcama Geçmişi</h2>
+      <div class="row">
+        <div class="field small">
+          <label for="filterCard">Filtre (Kart)</label>
+          <select id="filterCard">
+            <option value="all">Tüm Kartlar</option>
+            <option value="ana">Ana Kart</option>
+            <option value="multinet">Multinet</option>
+          </select>
+        </div>
+        <div class="field small">
+          <label for="filterMonth">Ay</label>
+          <input id="filterMonth" type="month" />
+        </div>
+        <div class="field">
+          <label for="searchText">Arama</label>
+          <input id="searchText" type="text" placeholder="Açıklama içinde ara..." />
+        </div>
+        <div class="field small">
+          <label>&nbsp;</label>
+          <button class="btn ghost" id="clearFilters">Filtreleri Temizle</button>
+        </div>
+        <div class="field small">
+          <label>&nbsp;</label>
+          <button class="btn danger" id="deleteSelected">Seçileni Sil</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:10px;">
+      <span class="pill">Toplam: <b id="historyTotal">₺0</b></span>
+      <span class="pill">Kayıt: <b id="historyCount">0</b></span>
+      <span class="pill right">Seçili: <b id="selectedCount">0</b></span>
+    </div>
+
+    <div style="overflow:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th class="select-col"><input id="selectAll" type="checkbox" title="Tümünü seç / kaldır" /> <span class="hide-sm">Hepsi</span></th>
+            <th class="date-col">Tarih</th>
+            <th class="card-col">Kart</th>
+            <th class="amount-col">Tutar</th>
+            <th>Açıklama</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="5" class="muted">Henüz kayıt yok.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="hint">
+      <b>İpucu:</b> Seçili kayıtları silmeden önce (özellikle çok kayıt varsa) JSON olarak yedek alman iyi olur.
+      <div class="row" style="margin-top:8px;">
+        <button class="btn ghost" id="exportJson">JSON İndir</button>
+        <label class="btn ghost" style="display:inline-flex; gap:8px; align-items:center; cursor:pointer;">
+          JSON Yükle
+          <input id="importJson" type="file" accept="application/json" style="display:none;" />
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="split">
+      <h2>Grafikler</h2>
+      <div class="tabs">
+        <button class="tab active" id="tabMonthly">Aylık</button>
+        <button class="tab" id="tabYearly">Yıllık</button>
+      </div>
+      <div class="row">
+        <div class="field small" id="monthlyControls">
+          <label for="chartMonth">Ay</label>
+          <input id="chartMonth" type="month" />
+        </div>
+        <div class="field small" id="yearlyControls" style="display:none;">
+          <label for="chartYear">Yıl</label>
+          <select id="chartYear"></select>
+        </div>
+        <div class="field small">
+          <label for="chartCard">Kart</label>
+          <select id="chartCard">
+            <option value="all">Tüm Kartlar</option>
+            <option value="ana">Ana Kart</option>
+            <option value="multinet">Multinet</option>
+          </select>
+        </div>
+        <div class="field small">
+          <label>&nbsp;</label>
+          <button class="btn" id="refreshChart">Göster</button>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="chartCanvas" height="120"></canvas>
+    <div class="hint" id="chartHint"></div>
+  </section>
+
+</main>
+
+<script>
+  const STORAGE_KEY = "budget_tracker_local_v1";
+
+  const defaultState = () => ({
+    budgets: { ana: 0, multinet: 0 },
+    expenses: [] // {id, card, date(YYYY-MM-DD), amount, desc, createdAt}
+  });
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultState();
+      const obj = JSON.parse(raw);
+      if(!obj || typeof obj !== "object") return defaultState();
+      obj.budgets ??= {ana:0, multinet:0};
+      obj.expenses ??= [];
+      return obj;
+    }catch(e){
+      return defaultState();
+    }
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  let state = loadState();
+  let selectedIds = new Set();
+
+  // -----------------------------
+  //  Utils
+  // -----------------------------
+  const fmtTry = (n) => (Number.isFinite(n) ? n : 0).toLocaleString("tr-TR", { style:"currency", currency:"TRY", maximumFractionDigits: 2 });
+  const toISODate = (d) => d.toISOString().slice(0,10);
+  const pad2 = (n) => String(n).padStart(2,"0");
+  const monthKeyFromDate = (isoDate) => isoDate.slice(0,7); // YYYY-MM
+
+  function parseMoney(val){
+    const n = Number(val);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function daysInMonth(year, month1to12){
+    return new Date(year, month1to12, 0).getDate();
+  }
+
+  function lastDayISO(year, month1to12){
+    const dim = daysInMonth(year, month1to12);
+    return `${year}-${pad2(month1to12)}-${pad2(dim)}`;
+  }
+
+  function remainingDaysFromTodayInMonth(year, month1to12){
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const end = new Date(year, month1to12, 0);
+    if (start.getFullYear() !== year || (start.getMonth()+1) !== month1to12) return null;
+    const diffMs = (end - start);
+    const diffDays = Math.floor(diffMs / 86400000) + 1;
+    return Math.max(0, diffDays);
+  }
+
+  function sumExpenses({card="all", month=null}){
+    let total = 0;
+    for(const e of state.expenses){
+      if(card !== "all" && e.card !== card) continue;
+      if(month && monthKeyFromDate(e.date) !== month) continue;
+      total += Number(e.amount) || 0;
+    }
+    return total;
+  }
+
+  function sumExpensesUntilISO({card="all", month=null, endISO=null}){
+    let total = 0;
+    for(const e of state.expenses){
+      if(card !== "all" && e.card !== card) continue;
+      if(month && monthKeyFromDate(e.date) !== month) continue;
+      if(endISO && e.date > endISO) continue;
+      total += Number(e.amount) || 0;
+    }
+    return total;
+  }
+
+  function normalizeMonthInput(el, fallback){
+    if(el.value) return el.value;
+    el.value = fallback;
+    return el.value;
+  }
+
+  function compareMonthKey(a, b){
+    if(a < b) return -1;
+    if(a > b) return 1;
+    return 0;
+  }
+
+  // -----------------------------
+  //  Elements
+  // -----------------------------
+  const els = {
+    budgetAna: document.getElementById("budgetAna"),
+    budgetMulti: document.getElementById("budgetMulti"),
+    applyBudgets: document.getElementById("applyBudgets"),
+    resetAll: document.getElementById("resetAll"),
+
+    summaryMonth: document.getElementById("summaryMonth"),
+    anaRemaining: document.getElementById("anaRemaining"),
+    multiRemaining: document.getElementById("multiRemaining"),
+    anaDailyBase: document.getElementById("anaDailyBase"),
+    multiDailyBase: document.getElementById("multiDailyBase"),
+    anaDailyNote: document.getElementById("anaDailyNote"),
+    multiDailyNote: document.getElementById("multiDailyNote"),
+    anaAccum: document.getElementById("anaAccum"),
+    multiAccum: document.getElementById("multiAccum"),
+    anaAccumNote: document.getElementById("anaAccumNote"),
+    multiAccumNote: document.getElementById("multiAccumNote"),
+    anaSpentInfo: document.getElementById("anaSpentInfo"),
+    multiSpentInfo: document.getElementById("multiSpentInfo"),
+
+    expCard: document.getElementById("expCard"),
+    expDate: document.getElementById("expDate"),
+    expAmount: document.getElementById("expAmount"),
+    expDesc: document.getElementById("expDesc"),
+    addExpense: document.getElementById("addExpense"),
+    addExpenseHint: document.getElementById("addExpenseHint"),
+
+    filterCard: document.getElementById("filterCard"),
+    filterMonth: document.getElementById("filterMonth"),
+    searchText: document.getElementById("searchText"),
+    clearFilters: document.getElementById("clearFilters"),
+    deleteSelected: document.getElementById("deleteSelected"),
+    historyBody: document.getElementById("historyBody"),
+    historyTotal: document.getElementById("historyTotal"),
+    historyCount: document.getElementById("historyCount"),
+    selectedCount: document.getElementById("selectedCount"),
+    selectAll: document.getElementById("selectAll"),
+    exportJson: document.getElementById("exportJson"),
+    importJson: document.getElementById("importJson"),
+
+    tabMonthly: document.getElementById("tabMonthly"),
+    tabYearly: document.getElementById("tabYearly"),
+    monthlyControls: document.getElementById("monthlyControls"),
+    yearlyControls: document.getElementById("yearlyControls"),
+    chartMonth: document.getElementById("chartMonth"),
+    chartYear: document.getElementById("chartYear"),
+    chartCard: document.getElementById("chartCard"),
+    refreshChart: document.getElementById("refreshChart"),
+    chartHint: document.getElementById("chartHint"),
+    chartCanvas: document.getElementById("chartCanvas")
+  };
+
+  // -----------------------------
+  //  Init default dates
+  // -----------------------------
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${pad2(now.getMonth()+1)}`;
+
+  els.expDate.value = toISODate(now);
+  els.summaryMonth.value = currentMonth;
+  els.filterMonth.value = "";
+  els.chartMonth.value = currentMonth;
+
+  // Populate years select
+  const y = now.getFullYear();
+  const years = [y-2, y-1, y, y+1];
+  for(const yy of years){
+    const opt = document.createElement("option");
+    opt.value = String(yy);
+    opt.textContent = String(yy);
+    els.chartYear.appendChild(opt);
+  }
+  els.chartYear.value = String(y);
+
+  // -----------------------------
+  //  Budgets
+  // -----------------------------
+  function renderBudgetsInputs(){
+    els.budgetAna.value = state.budgets.ana ?? 0;
+    els.budgetMulti.value = state.budgets.multinet ?? 0;
+  }
+
+  els.applyBudgets.addEventListener("click", () => {
+    state.budgets.ana = Math.max(0, parseMoney(els.budgetAna.value));
+    state.budgets.multinet = Math.max(0, parseMoney(els.budgetMulti.value));
+    saveState();
+    renderAll();
+  });
+
+  els.resetAll.addEventListener("click", () => {
+    const ok = confirm("Tüm veriler silinecek. Emin misin?");
+    if(!ok) return;
+    state = defaultState();
+    selectedIds.clear();
+    saveState();
+    renderAll();
+  });
+
+  // -----------------------------
+  //  Summary
+  // -----------------------------
+  function calcSummary(month){
+    const [yearStr, monthStr] = month.split("-");
+    const year = Number(yearStr);
+    const m = Number(monthStr);
+
+    const dim = daysInMonth(year, m);
+
+    const budgetAna = Number(state.budgets.ana)||0;
+    const budgetMulti = Number(state.budgets.multinet)||0;
+
+    const dailyBaseAna = dim > 0 ? budgetAna / dim : 0;
+    const dailyBaseMulti = dim > 0 ? budgetMulti / dim : 0;
+
+    const spentAnaMonth = sumExpenses({card:"ana", month});
+    const spentMultiMonth = sumExpenses({card:"multinet", month});
+
+    const remainingAna = budgetAna - spentAnaMonth;
+    const remainingMulti = budgetMulti - spentMultiMonth;
+
+    const remDays = remainingDaysFromTodayInMonth(year, m);
+    const dailyRemainingAna = (remDays && remDays>0) ? (remainingAna / remDays) : (dim>0 ? remainingAna / dim : 0);
+    const dailyRemainingMulti = (remDays && remDays>0) ? (remainingMulti / remDays) : (dim>0 ? remainingMulti / dim : 0);
+
+    const cmp = compareMonthKey(month, currentMonth);
+    let daysPassed = 0;
+    let endISO = null;
+
+    if(cmp < 0){
+      daysPassed = dim;
+      endISO = lastDayISO(year, m);
+    }else if(cmp > 0){
+      daysPassed = 0;
+      endISO = null;
+    }else{
+      daysPassed = now.getDate();
+      endISO = toISODate(now);
+    }
+
+    const spentAnaToDate = (daysPassed === 0) ? 0 : sumExpensesUntilISO({card:"ana", month, endISO});
+    const spentMultiToDate = (daysPassed === 0) ? 0 : sumExpensesUntilISO({card:"multinet", month, endISO});
+
+    const plannedAnaToDate = dailyBaseAna * daysPassed;
+    const plannedMultiToDate = dailyBaseMulti * daysPassed;
+
+    const accumAna = plannedAnaToDate - spentAnaToDate;
+    const accumMulti = plannedMultiToDate - spentMultiToDate;
+
+    return {
+      year, m, dim, remDays,
+      budgetAna, budgetMulti,
+      dailyBaseAna, dailyBaseMulti,
+      spentAnaMonth, spentMultiMonth,
+      spentAnaToDate, spentMultiToDate,
+      remainingAna, remainingMulti,
+      dailyRemainingAna, dailyRemainingMulti,
+      daysPassed,
+      plannedAnaToDate, plannedMultiToDate,
+      accumAna, accumMulti,
+      isCurrent: (cmp === 0),
+      isPast: (cmp < 0),
+      isFuture: (cmp > 0)
+    };
+  }
+
+  function renderSummary(){
+    const month = normalizeMonthInput(els.summaryMonth, currentMonth);
+    const s = calcSummary(month);
+
+    els.anaRemaining.textContent = fmtTry(s.remainingAna);
+    els.multiRemaining.textContent = fmtTry(s.remainingMulti);
+
+    els.anaDailyBase.textContent = fmtTry(s.dailyBaseAna);
+    els.multiDailyBase.textContent = fmtTry(s.dailyBaseMulti);
+
+    if(s.isCurrent){
+      els.anaDailyNote.textContent = `Kalan günlük (bugünden ay sonuna): ${fmtTry(s.dailyRemainingAna)} • ${s.remDays} gün`;
+      els.multiDailyNote.textContent = `Kalan günlük (bugünden ay sonuna): ${fmtTry(s.dailyRemainingMulti)} • ${s.remDays} gün`;
+    }else{
+      els.anaDailyNote.textContent = `Kalan günlük (ay ort.): ${fmtTry(s.dailyRemainingAna)}`;
+      els.multiDailyNote.textContent = `Kalan günlük (ay ort.): ${fmtTry(s.dailyRemainingMulti)}`;
+    }
+
+    els.anaAccum.textContent = fmtTry(s.accumAna);
+    els.multiAccum.textContent = fmtTry(s.accumMulti);
+
+    if(s.isFuture){
+      els.anaAccumNote.textContent = "Seçili ay gelecekte.";
+      els.multiAccumNote.textContent = "Seçili ay gelecekte.";
+    }else if(s.isPast){
+      els.anaAccumNote.textContent = `Ay sonu: plan ${fmtTry(s.dailyBaseAna * s.dim)} − harcama ${fmtTry(s.spentAnaMonth)}`;
+      els.multiAccumNote.textContent = `Ay sonu: plan ${fmtTry(s.dailyBaseMulti * s.dim)} − harcama ${fmtTry(s.spentMultiMonth)}`;
+    }else{
+      els.anaAccumNote.textContent = `Bugüne kadar: plan ${fmtTry(s.plannedAnaToDate)} − harcama ${fmtTry(s.spentAnaToDate)}`;
+      els.multiAccumNote.textContent = `Bugüne kadar: plan ${fmtTry(s.plannedMultiToDate)} − harcama ${fmtTry(s.spentMultiToDate)}`;
+    }
+
+    els.anaSpentInfo.textContent = `Bu ay harcama: ${fmtTry(s.spentAnaMonth)}`;
+    els.multiSpentInfo.textContent = `Bu ay harcama: ${fmtTry(s.spentMultiMonth)}`;
+  }
+
+  els.summaryMonth.addEventListener("change", () => {
+    renderSummary();
+  });
+
+  // -----------------------------
+  //  Expenses
+  // -----------------------------
+  function addExpense(){
+    const card = els.expCard.value;
+    const date = els.expDate.value;
+    const amount = parseMoney(els.expAmount.value);
+    const desc = (els.expDesc.value || "").trim();
+
+    if(!date){
+      els.addExpenseHint.innerHTML = '<span class="danger-text">Tarih zorunlu.</span>';
+      return;
+    }
+    if(!(amount > 0)){
+      els.addExpenseHint.innerHTML = '<span class="danger-text">Tutar 0\'dan büyük olmalı.</span>';
+      return;
+    }
+
+    const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+    state.expenses.push({
+      id,
+      card,
+      date,
+      amount: Math.round(amount*100)/100,
+      desc,
+      createdAt: Date.now()
+    });
+
+    saveState();
+    els.expAmount.value = "";
+    els.expDesc.value = "";
+    els.addExpenseHint.textContent = "Eklendi.";
+    setTimeout(() => { els.addExpenseHint.textContent = ""; }, 900);
+
+    renderAll();
+  }
+
+  els.addExpense.addEventListener("click", addExpense);
+  els.expAmount.addEventListener("keydown", (e) => { if(e.key === "Enter") addExpense(); });
+  els.expDesc.addEventListener("keydown", (e) => { if(e.key === "Enter") addExpense(); });
+
+  // -----------------------------
+  //  History (optimized: event delegation + debounced search)
+  // -----------------------------
+  function getFilteredExpenses(){
+    const card = els.filterCard.value;
+    const month = els.filterMonth.value || null;
+    const q = (els.searchText.value || "").trim().toLowerCase();
+
+    return state.expenses
+      .filter(e => {
+        if(card !== "all" && e.card !== card) return false;
+        if(month && monthKeyFromDate(e.date) !== month) return false;
+        if(q){
+          const hay = (e.desc || "").toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      })
+      .sort((a,b) => (b.date.localeCompare(a.date)) || (b.createdAt - a.createdAt));
+  }
+
+  function renderHistory(){
+    const rows = getFilteredExpenses();
+    const total = rows.reduce((s,e)=> s + (Number(e.amount)||0), 0);
+
+    els.historyTotal.textContent = fmtTry(total);
+    els.historyCount.textContent = String(rows.length);
+
+    const allSelected = rows.length > 0 && rows.every(r => selectedIds.has(r.id));
+    els.selectAll.checked = allSelected;
+
+    els.selectedCount.textContent = String(selectedIds.size);
+
+    if(rows.length === 0){
+      els.historyBody.innerHTML = '<tr><td colspan="5" class="muted">Filtreye uygun kayıt yok.</td></tr>';
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    for(const e of rows){
+      const tr = document.createElement("tr");
+
+      const tdSel = document.createElement("td");
+      tdSel.className = "select-col";
+      tdSel.innerHTML = `<input class="row-cb" type="checkbox" data-id="${e.id}" ${selectedIds.has(e.id) ? "checked" : ""} title="Seç">`;
+
+      const tdDate = document.createElement("td");
+      tdDate.className = "date-col";
+      tdDate.textContent = e.date;
+
+      const tdCard = document.createElement("td");
+      tdCard.className = "card-col";
+      tdCard.innerHTML = e.card === "ana" ? "<span class='pill'>Ana Kart</span>" : "<span class='pill'>Multinet</span>";
+
+      const tdAmt = document.createElement("td");
+      tdAmt.className = "amount-col";
+      tdAmt.textContent = fmtTry(Number(e.amount)||0);
+
+      const tdDesc = document.createElement("td");
+      tdDesc.className = "desc-col";
+      tdDesc.textContent = e.desc || "";
+
+      tr.appendChild(tdSel);
+      tr.appendChild(tdDate);
+      tr.appendChild(tdCard);
+      tr.appendChild(tdAmt);
+      tr.appendChild(tdDesc);
+
+      frag.appendChild(tr);
+    }
+    els.historyBody.innerHTML = "";
+    els.historyBody.appendChild(frag);
+  }
+
+  els.historyBody.addEventListener("change", (e) => {
+    const t = e.target;
+    if(!(t instanceof HTMLInputElement)) return;
+    if(!t.classList.contains("row-cb")) return;
+    const id = t.dataset.id;
+    if(!id) return;
+
+    if(t.checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+
+    els.selectedCount.textContent = String(selectedIds.size);
+
+    const rows2 = getFilteredExpenses();
+    els.selectAll.checked = rows2.length>0 && rows2.every(r => selectedIds.has(r.id));
+  });
+
+  els.filterCard.addEventListener("change", renderHistory);
+  els.filterMonth.addEventListener("change", renderHistory);
+
+  let searchTimer = null;
+  els.searchText.addEventListener("input", () => {
+    if(searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      renderHistory();
+      searchTimer = null;
+    }, 160);
+  });
+
+  els.clearFilters.addEventListener("click", () => {
+    els.filterCard.value = "all";
+    els.filterMonth.value = "";
+    els.searchText.value = "";
+    renderHistory();
+  });
+
+  els.selectAll.addEventListener("change", () => {
+    const rows = getFilteredExpenses();
+    if(els.selectAll.checked){
+      for(const e of rows) selectedIds.add(e.id);
+    }else{
+      for(const e of rows) selectedIds.delete(e.id);
+    }
+    els.selectedCount.textContent = String(selectedIds.size);
+    renderHistory();
+  });
+
+  els.deleteSelected.addEventListener("click", () => {
+    if(selectedIds.size === 0){
+      alert("Silmek için en az 1 kayıt seç.");
+      return;
+    }
+    const ok = confirm(`${selectedIds.size} kayıt silinecek. Emin misin?`);
+    if(!ok) return;
+
+    state.expenses = state.expenses.filter(e => !selectedIds.has(e.id));
+    selectedIds.clear();
+    saveState();
+    renderAll();
+  });
+
+  // -----------------------------
+  //  JSON export/import
+  // -----------------------------
+  els.exportJson.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `butce-takip-yedek-${toISODate(new Date())}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  els.importJson.addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      if(!obj || typeof obj !== "object") throw new Error("Geçersiz JSON");
+      if(!obj.budgets || !obj.expenses) throw new Error("Eksik alanlar");
+
+      obj.budgets.ana = Math.max(0, Number(obj.budgets.ana)||0);
+      obj.budgets.multinet = Math.max(0, Number(obj.budgets.multinet)||0);
+      obj.expenses = Array.isArray(obj.expenses) ? obj.expenses.map(x => ({
+        id: String(x.id ?? (Date.now()+"_"+Math.random().toString(16).slice(2))),
+        card: (x.card === "ana" || x.card === "multinet") ? x.card : "ana",
+        date: String(x.date || toISODate(new Date())),
+        amount: Math.round((Number(x.amount)||0)*100)/100,
+        desc: String(x.desc||""),
+        createdAt: Number(x.createdAt)||Date.now()
+      })) : [];
+
+      state = obj;
+      selectedIds.clear();
+      saveState();
+      renderAll();
+      alert("JSON yüklendi.");
+    }catch(err){
+      alert("JSON yüklenemedi: " + (err?.message || String(err)));
+    }finally{
+      els.importJson.value = "";
+    }
+  });
+
+  // -----------------------------
+  //  Charts (optimized: update instead of destroy/recreate)
+  // -----------------------------
+  let chartMode = "monthly"; // monthly|yearly
+  let chart = null;
+
+  function setChartMode(mode){
+    chartMode = mode;
+    const isMonthly = mode === "monthly";
+    els.tabMonthly.classList.toggle("active", isMonthly);
+    els.tabYearly.classList.toggle("active", !isMonthly);
+    els.monthlyControls.style.display = isMonthly ? "" : "none";
+    els.yearlyControls.style.display = isMonthly ? "none" : "";
+  }
+
+  els.tabMonthly.addEventListener("click", () => { setChartMode("monthly"); renderChart(); });
+  els.tabYearly.addEventListener("click", () => { setChartMode("yearly"); renderChart(); });
+
+  function buildMonthlySeries(month, card){
+    const [yStr, mStr] = month.split("-");
+    const year = Number(yStr);
+    const m = Number(mStr);
+    const dim = daysInMonth(year, m);
+
+    const totals = new Array(dim).fill(0);
+    for(const e of state.expenses){
+      if(card !== "all" && e.card !== card) continue;
+      if(monthKeyFromDate(e.date) !== month) continue;
+      const day = Number(e.date.slice(8,10));
+      if(day>=1 && day<=dim) totals[day-1] += Number(e.amount)||0;
+    }
+    const labels = totals.map((_,i)=> String(i+1));
+    return {labels, data: totals};
+  }
+
+  function buildYearlySeries(year, card){
+    const totals = new Array(12).fill(0);
+    for(const e of state.expenses){
+      if(card !== "all" && e.card !== card) continue;
+      const y = Number(e.date.slice(0,4));
+      if(y !== year) continue;
+      const m = Number(e.date.slice(5,7));
+      if(m>=1 && m<=12) totals[m-1] += Number(e.amount)||0;
+    }
+    const labels = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+    return {labels, data: totals};
+  }
+
+  function renderChart(){
+    const card = els.chartCard.value;
+
+    let labels = [];
+    let data = [];
+    let title = "";
+
+    if(chartMode === "monthly"){
+      const month = normalizeMonthInput(els.chartMonth, currentMonth);
+      const series = buildMonthlySeries(month, card);
+      labels = series.labels;
+      data = series.data;
+      title = `${month} • Günlük Harcama`;
+      const total = data.reduce((a,b)=>a+b,0);
+      els.chartHint.textContent = `Toplam: ${fmtTry(total)} (${card === "all" ? "Tüm Kartlar" : (card==="ana"?"Ana Kart":"Multinet")})`;
+    }else{
+      const year = Number(els.chartYear.value || now.getFullYear());
+      const series = buildYearlySeries(year, card);
+      labels = series.labels;
+      data = series.data;
+      title = `${year} • Aylık Harcama`;
+      const total = data.reduce((a,b)=>a+b,0);
+      els.chartHint.textContent = `Toplam: ${fmtTry(total)} (${card === "all" ? "Tüm Kartlar" : (card==="ana"?"Ana Kart":"Multinet")})`;
+    }
+
+    if(!chart){
+      chart = new Chart(els.chartCanvas, {
+        type: "bar",
+        data: { labels, datasets: [{ label: title, data }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: (ctx) => fmtTry(ctx.parsed.y) } }
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: (val) => {
+                  const n = Number(val);
+                  if(!Number.isFinite(n)) return val;
+                  return n.toLocaleString("tr-TR");
+                }
+              }
+            }
+          }
+        }
+      });
+    }else{
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = data;
+      chart.data.datasets[0].label = title;
+      chart.update("none");
+    }
+  }
+
+  els.refreshChart.addEventListener("click", renderChart);
+  els.chartCard.addEventListener("change", renderChart);
+  els.chartMonth.addEventListener("change", () => { if(chartMode==="monthly") renderChart(); });
+  els.chartYear.addEventListener("change", () => { if(chartMode==="yearly") renderChart(); });
+
+  // -----------------------------
+  //  Render all
+  // -----------------------------
+  function renderAll(){
+    renderBudgetsInputs();
+    renderSummary();
+    renderHistory();
+    renderChart();
+  }
+
+  renderAll();
+</script>
+</body>
+</html>
