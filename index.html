@@ -167,6 +167,7 @@
     .form-grid{
       display:grid;
       grid-template-columns:1fr;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap:10px;
       align-items:center;
       width:100%;
@@ -576,6 +577,7 @@
     <div class="split">
       <h2 class="section-title"><span class="dot"></span>Özet</h2>
       <div class="row summary-actions form-grid wide-200">
+      <div class="row summary-actions form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         <div class="field small">
           <label for="summaryMonth">Ay</label>
           <input id="summaryMonth" type="month" />
@@ -736,6 +738,7 @@
         <button class="tab" id="tabYearly">Yıllık</button>
       </div>
       <div class="row form-grid wide-170">
+      <div class="row form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));">
         <div class="field small" id="monthlyControls">
           <label for="chartMonth">Ay</label>
           <input id="chartMonth" type="month" />
