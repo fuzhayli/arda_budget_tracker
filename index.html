@@ -17,6 +17,7 @@
       --danger:#ff6b6b;
       --shadow:0 24px 55px rgba(1,4,18,.8);
       --radius:20px;
+      --content-max:1100px;
       --glass:rgba(4,12,33,.78);
       --glass-soft:rgba(255,255,255,.08);
       --blur-heavy:18px;
@@ -66,9 +67,9 @@
       100%{ transform:translate3d(-10px,25px,0) scale(.95); }
     }
     header{
-      padding:24px 16px 12px;
-      width:min(1200px, 100%);
-      max-width:1200px;
+      padding:24px clamp(14px, 4vw, 18px) 12px;
+      width:min(var(--content-max), 100%);
+      max-width:var(--content-max);
       margin:0 auto;
       position: relative;
       z-index:1;
@@ -97,10 +98,10 @@
       font-size:13px;
     }
     main{
-      width:min(1200px, 100%);
-      max-width:1200px;
+      width:min(var(--content-max), 100%);
+      max-width:var(--content-max);
       margin:0 auto;
-      padding:12px 16px 40px;
+      padding:12px clamp(14px, 4vw, 20px) 40px;
       display:grid;
       grid-template-columns: 1fr;
       gap:14px;
@@ -120,12 +121,15 @@
     @media (max-width: 980px){
       .grid-2, .grid-3{ grid-template-columns:1fr; }
     }
+    header, main, .card, .grid-2, .grid-3, .row, .field{
+      min-width:0;
+    }
     .card{
       background:linear-gradient(150deg, rgba(8,18,46,.85), rgba(4,9,25,.75));
       border:1px solid rgba(255,255,255,.08);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-      padding:18px;
+      padding:clamp(14px, 4vw, 18px);
       position:relative;
       overflow:hidden;
       backdrop-filter: blur(var(--blur-heavy)) saturate(190%);
@@ -160,6 +164,13 @@
       align-items:center;
       flex-wrap:wrap;
     }
+    .form-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap:10px;
+      align-items:center;
+      width:100%;
+    }
     label{
       font-size:12px;
       color:var(--muted);
@@ -172,6 +183,8 @@
     }
     input, select, textarea{
       width:100%;
+      max-width:100%;
+      min-width:0;
       padding:12px 16px;
       border:1px solid rgba(255,255,255,.12);
       border-radius:24px;
@@ -205,7 +218,14 @@
       flex:1;
       min-width: 180px;
     }
-    .field.small{ min-width: 150px; max-width: 240px; }
+    .field.small{ min-width: 140px; max-width: 240px; }
+    .row > *{
+      min-width:0;
+      max-width:100%;
+    }
+    .card .row{
+      width:100%;
+    }
     .btn{
       cursor:pointer;
       border:0;
@@ -358,7 +378,7 @@
     .budget-panel .hint{
       margin-top:10px;
     }
-    @media (max-width: 640px){
+    @media (max-width: 768px){
       .summary-actions{
         flex-direction:column;
         align-items:stretch;
@@ -419,6 +439,9 @@
       .pill{
         width:100%;
         text-align:center;
+      }
+      .form-grid{
+        grid-template-columns:1fr;
       }
     }
     .danger-text{ color: var(--danger); }
@@ -502,7 +525,7 @@
 <main>
   <section class="card" id="expenseCard">
     <h2 class="section-title"><span class="dot"></span>Harcama Ekle</h2>
-    <div class="row">
+    <div class="row form-grid">
       <div class="field small">
         <label for="expCard">Kart</label>
         <select id="expCard">
@@ -533,7 +556,7 @@
   <section class="card">
     <div class="split">
       <h2 class="section-title"><span class="dot"></span>Özet</h2>
-      <div class="row summary-actions">
+      <div class="row summary-actions form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         <div class="field small">
           <label for="summaryMonth">Ay</label>
           <input id="summaryMonth" type="month" />
@@ -547,7 +570,7 @@
         <h3 class="section-title"><span class="dot"></span>Aylık Başlangıç Bütçesi</h3>
         <button class="btn ghost" id="closeBudget">Kapat</button>
       </div>
-      <div class="row">
+      <div class="row form-grid">
         <div class="field">
           <label for="budgetAna">Ana Kart (TL)</label>
           <input id="budgetAna" type="number" min="0" step="0.01" placeholder="Örn: 20000" />
@@ -623,7 +646,7 @@
   <section class="card">
     <div class="split">
       <h2 class="section-title"><span class="dot"></span>Harcama Geçmişi</h2>
-      <div class="row">
+      <div class="row form-grid">
         <div class="field small">
           <label for="filterCard">Filtre (Kart)</label>
           <select id="filterCard">
@@ -693,7 +716,7 @@
         <button class="tab active" id="tabMonthly">Aylık</button>
         <button class="tab" id="tabYearly">Yıllık</button>
       </div>
-      <div class="row">
+      <div class="row form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));">
         <div class="field small" id="monthlyControls">
           <label for="chartMonth">Ay</label>
           <input id="chartMonth" type="month" />
