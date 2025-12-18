@@ -164,6 +164,13 @@
       align-items:center;
       flex-wrap:wrap;
     }
+    .form-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap:10px;
+      align-items:center;
+      width:100%;
+    }
     label{
       font-size:12px;
       color:var(--muted);
@@ -211,6 +218,7 @@
       flex:1;
       min-width: 180px;
     }
+    .field.small{ min-width: 140px; max-width: 240px; }
     .field.small{ min-width: 150px; max-width: 240px; }
     .row > *{
       min-width:0;
@@ -433,6 +441,9 @@
         width:100%;
         text-align:center;
       }
+      .form-grid{
+        grid-template-columns:1fr;
+      }
     }
     .danger-text{ color: var(--danger); }
     .small{ font-size:12px; color:var(--muted); }
@@ -515,7 +526,7 @@
 <main>
   <section class="card" id="expenseCard">
     <h2 class="section-title"><span class="dot"></span>Harcama Ekle</h2>
-    <div class="row">
+    <div class="row form-grid">
       <div class="field small">
         <label for="expCard">Kart</label>
         <select id="expCard">
@@ -546,7 +557,7 @@
   <section class="card">
     <div class="split">
       <h2 class="section-title"><span class="dot"></span>Özet</h2>
-      <div class="row summary-actions">
+      <div class="row summary-actions form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         <div class="field small">
           <label for="summaryMonth">Ay</label>
           <input id="summaryMonth" type="month" />
@@ -560,7 +571,7 @@
         <h3 class="section-title"><span class="dot"></span>Aylık Başlangıç Bütçesi</h3>
         <button class="btn ghost" id="closeBudget">Kapat</button>
       </div>
-      <div class="row">
+      <div class="row form-grid">
         <div class="field">
           <label for="budgetAna">Ana Kart (TL)</label>
           <input id="budgetAna" type="number" min="0" step="0.01" placeholder="Örn: 20000" />
@@ -636,7 +647,7 @@
   <section class="card">
     <div class="split">
       <h2 class="section-title"><span class="dot"></span>Harcama Geçmişi</h2>
-      <div class="row">
+      <div class="row form-grid">
         <div class="field small">
           <label for="filterCard">Filtre (Kart)</label>
           <select id="filterCard">
@@ -706,7 +717,7 @@
         <button class="tab active" id="tabMonthly">Aylık</button>
         <button class="tab" id="tabYearly">Yıllık</button>
       </div>
-      <div class="row">
+      <div class="row form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));">
         <div class="field small" id="monthlyControls">
           <label for="chartMonth">Ay</label>
           <input id="chartMonth" type="month" />
